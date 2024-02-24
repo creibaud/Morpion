@@ -22,6 +22,14 @@ class Grid:
                 cells[row].append(Cell(row, col, self.grid[row][col]))
         return cells
     
+    def getEmptyCells(self):
+        cells = []
+        for row in range(ROWS):
+            for col in range(COLS):
+                if self.grid[row][col] == "":
+                    cells.append((row, col))
+        return cells
+    
     def handleMouseHover(self, pos, gameOver):
         for row in range(ROWS):
             for col in range(COLS):
@@ -38,6 +46,14 @@ class Grid:
                     self.cells[row][col].content = player
                     return True
         return False
+    
+    def makeMove(self, move, player):
+        self.grid[move[0]][move[1]] = player
+        self.cells[move[0]][move[1]].content = player
+
+    def undoMove(self, move):
+        self.grid[move[0]][move[1]] = ""
+        self.cells[move[0]][move[1]].content = ""
     
     def checkWinner(self, player):
         for row in range(ROWS):

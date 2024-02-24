@@ -2,7 +2,7 @@ from src.grid import Grid
 from src.panel import Panel
 from src.line import Line
 
-class Game:
+class Offline:
     def __init__(self):
         self.grid = Grid()
         self.panel = Panel()

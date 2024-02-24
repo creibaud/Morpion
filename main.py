@@ -1,6 +1,6 @@
 import pygame
 from src.constants import *
-from src.game import Game
+from src.offline import Offline
 
 pygame.init()
 
@@ -11,7 +11,7 @@ icon = pygame.image.load("assets/images/icon.png")
 pygame.display.set_icon(icon)
 
 clock = pygame.time.Clock()
-game = Game()
+game = Offline()
 
 run = True
 while run:

@@ -3,10 +3,12 @@ from src.panel import Panel
 from src.line import Line
 
 class IA:
-    def __init__(self):
+    def __init__(self, difficulty):
         self.grid = Grid()
         self.panel = Panel()
         self.line = Line()
+
+        self.difficulty = difficulty
 
         self.player = "X"
         self.gameOver = False
@@ -20,7 +22,7 @@ class IA:
             self.player = "O" if self.player == "X" else "X"
             self.panel.update(self.player)
             
-            _, bestMove = self.minMax(self.player, True)
+            _, bestMove = self.minMax(self.player, True, self.difficulty)
             if bestMove is not None:
                 self.grid.makeMove(bestMove, self.player)
 
@@ -28,8 +30,8 @@ class IA:
             self.player = "O" if self.player == "X" else "X"
             self.panel.update(self.player)
 
-    def minMax(self, symbol, maximizingPlayer):
-        if self.grid.isTie() or self.grid.checkWinner("X") or self.grid.checkWinner("O"):
+    def minMax(self, symbol, maximizingPlayer, depth):
+        if self.grid.isTie() or self.grid.checkWinner("X") or self.grid.checkWinner("O") or depth == 0:
             if self.grid.checkWinner("X"):
                 return -1 if symbol == "O" else 1, None
             elif self.grid.checkWinner("O"):
@@ -42,7 +44,7 @@ class IA:
             bestMove = None
             for move in self.grid.getEmptyCells():
                 self.grid.makeMove(move, symbol)
-                eval, _ = self.minMax(symbol, False)
+                eval, _ = self.minMax(symbol, False, depth - 1)
                 self.grid.undoMove(move)
                 if eval > maxEval:
                     maxEval = eval
@@ -54,7 +56,7 @@ class IA:
             opponent = "X" if symbol == "O" else "O"
             for move in self.grid.getEmptyCells():
                 self.grid.makeMove(move, opponent)
-                eval, _ = self.minMax(symbol, True)
+                eval, _ = self.minMax(symbol, True, depth - 1)
                 self.grid.undoMove(move)
                 if eval < minEval:
                     minEval = eval

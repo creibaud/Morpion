@@ -47,6 +47,13 @@ class Grid:
                     return True
         return False
     
+    def convertPosToCell(self, pos):
+        for row in range(ROWS):
+            for col in range(COLS):
+                if self.cells[row][col].rect.collidepoint(pos):
+                    return (row, col)
+        return None
+    
     def makeMove(self, move, player):
         self.grid[move[0]][move[1]] = player
         self.cells[move[0]][move[1]].content = player

@@ -63,7 +63,6 @@ class IA:
                     bestMove = move
             return minEval, bestMove
 
-    
     def isGameOver(self):
         winner = self.grid.checkWinner(self.player)
         if winner:

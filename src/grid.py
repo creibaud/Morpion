@@ -86,6 +86,11 @@ class Grid:
                     return False
         return True
     
+    def update(self):
+        for row in range(ROWS):
+            for col in range(COLS):
+                self.cells[row][col].content = self.grid[row][col]
+    
     def draw(self, screen):
         for row in range(ROWS):
             for col in range(COLS):

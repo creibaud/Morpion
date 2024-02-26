@@ -45,9 +45,7 @@ while True:
                             print(e)
                     break
                 case 3:
-                    host = input("Enter the host: ")
-                    port = int(input("Enter the port: "))
-                    game = Online(host, port)
+                    game = Online()
                     break
         else:
             raise ValueError("Invalid mode")
@@ -73,3 +71,5 @@ while run:
     clock.tick(FPS)
 
 pygame.quit()
+if type(game) == Online:
+    game.stop()

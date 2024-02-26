@@ -1,33 +1,58 @@
-import pickle
+import requests
+import time
 from src.grid import Grid
 from src.panel import Panel
 from src.line import Line
-from src.client import Client
 
 class Online:
-    def __init__(self, host, port):
+    def __init__(self):
         self.grid = Grid()
         self.panel = Panel()
         self.line = Line()
+        self.urlGame = "https://parseapi.back4app.com/classes/Morpion"
+        self.urlPlayer = "https://parseapi.back4app.com/classes/Player"
+        self.headersPostPut = {
+            "X-Parse-Application-Id": "yRpYaPlAZ6so2uzzv1b1FFBBvOnxSabC5rOTql5N",
+            "X-Parse-REST-API-Key": "qKMEiimFjxaLVq2DQaFEpoEWxXKqo5Uvtij4WEZn",
+            "Content-Type": "application/json"
+        }
+        self.headersGetDelete = {
+            "X-Parse-Application-Id": "yRpYaPlAZ6so2uzzv1b1FFBBvOnxSabC5rOTql5N",
+            "X-Parse-REST-API-Key": "qKMEiimFjxaLVq2DQaFEpoEWxXKqo5Uvtij4WEZn"
+        }
 
-        self.client = Client(host, port)
-        self.client.start()
-
-        self.player = self.client.name
+        self.player = self.initPlayer()
         self.actualPlayer = "X"
-        self.isClientTurn = False if self.player == "O" else True
         self.gameOver = False
-        self.enemyMove = []
+        self.horloge = time.time()
+    
+    def initPlayer(self):
+        response = requests.request("GET", self.urlPlayer, headers=self.headersGetDelete).json()["results"]
+        if len(response) == 0:
+            requests.request("POST", self.urlPlayer, headers=self.headersPostPut, json={"symbol": "X"})
+            return "X"
+        elif len(response) == 1:
+            requests.request("POST", self.urlPlayer, headers=self.headersPostPut, json={"symbol": "O"})
+            return "O"
+        else:
+            print("The game is already full")
+            exit()
 
     def handleMouseHover(self, pos):
         self.grid.handleMouseHover(pos, self.gameOver)
     
     def handleMouseClick(self, pos):
-        if self.grid.handleMouseClick(pos, self.player, self.gameOver):
-            self.actualPlayer = "X" if self.actualPlayer == "O" else "X"
+        if self.grid.handleMouseClick(pos, self.player, self.gameOver) and self.player == self.actualPlayer:
+            self.isGameOver()
+            self.actualPlayer = "O" if self.actualPlayer == "X" else "X"
+
+            objectId = requests.request("GET", self.urlGame, headers=self.headersGetDelete).json()["results"][0]["objectId"]
+            data = {
+                "grid": self.grid.grid,
+                "actualPlayer": self.actualPlayer
+            }
+            requests.request("PUT", self.urlGame + "/" + objectId, headers=self.headersPostPut, json=data)
             self.panel.update(self.actualPlayer)
-            self.client.send(pos)
-            self.isClientTurn = False
     
     def isGameOver(self):
         winner = self.grid.checkWinner(self.actualPlayer)
@@ -40,18 +65,41 @@ class Online:
                 self.panel.tie = True
                 self.gameOver = True
 
+        requests.request("PUT", self.urlGame, headers=self.headersPostPut, json={"gameOver": self.gameOver})
+
     def update(self):
-        if not self.isClientTurn and len(self.enemyMove) < len(self.client.enemyMove):
-            pos = self.grid.convertPosToCell(self.client.enemyMove[-1])
-            self.enemyMove.append(pos)
-            self.grid.makeMove(pos, "O" if self.player == "X" else "X")
-            self.isClientTurn = True
+        self.grid.grid = requests.request("GET", self.urlGame, headers=self.headersPostPut).json()["results"][0]["grid"]
+        self.grid.update()
+        self.isGameOver()
+        self.actualPlayer = requests.request("GET", self.urlGame, headers=self.headersGetDelete).json()["results"][0]["actualPlayer"]
+        self.horloge = time.time()
+        self.panel.update(self.actualPlayer)
 
     def draw(self, screen):
-        self.isGameOver()
-        self.update()
+        if time.time() - self.horloge > 5:
+            self.update()
+            
         self.grid.draw(screen)
         self.panel.draw(screen)
 
         if self.gameOver:
             self.line.draw(screen, self.grid.grid)
+
+    def stop(self):
+        objectIdList = requests.request("GET", self.urlPlayer, headers=self.headersGetDelete).json()["results"]
+
+        if len(objectIdList) == 0:
+            print("No player to delete")
+            exit()
+        else:
+            for i in range(2):
+                requests.request("DELETE", self.urlPlayer + "/" + objectIdList[i]["objectId"], headers=self.headersGetDelete)
+        
+        objectId = requests.request("GET", self.urlGame, headers=self.headersGetDelete).json()["results"][0]["objectId"]
+        data = {
+            "grid": [["", "", ""], ["", "", ""], ["", "", ""]],
+            "actualPlayer": "X",
+            "gameOver": False
+        }
+        requests.request("PUT", self.urlGame + "/" + objectId, headers=self.headersGetDelete, json=data)
+        exit()

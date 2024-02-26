@@ -82,7 +82,7 @@ class Online(Offline):
 
         if len(objectIdList) == 0:
             print("No player to delete")
-            exit()
+            return
         else:
             for i in range(2):
                 requests.request("DELETE", self.urlPlayer + "/" + objectIdList[i]["objectId"], headers=self.headersGetDelete)
@@ -94,4 +94,3 @@ class Online(Offline):
             "gameOver": False
         }
         requests.request("PUT", self.urlGame + "/" + objectId, headers=self.headersGetDelete, json=data)
-        exit()

@@ -180,7 +180,7 @@ def menuChoiceSymbol():
         pygame.display.flip()
         clock.tick(FPS)
 
-def run():
+def start():
     global game
     global screen
 
@@ -202,6 +202,68 @@ def run():
         pygame.display.flip()
         clock.tick(FPS)
 
+def restart():
+    global game
+    global screen
+    global restartGame
+
+    game = None
+
+    menu()
+    if type(game) == IA:
+        menuDifficulty()
+        menuChoiceSymbol()
+    start()
+
+    if type(game) == Online:
+        game.stop()
+
+    font = pygame.font.Font("assets/fonts/Roboto/Roboto-Medium.ttf", 40)
+    fontTitle = pygame.font.Font("assets/fonts/Roboto/Roboto-Medium.ttf", 60)
+    title = fontTitle.render("Restart ?", True, O_CELL)
+
+    yesButton = pygame.Rect(SCREEN_WIDTH / 2 - 100, 200, 200, 100)
+    yesText = font.render("Yes", True, X_CELL)
+
+    noButton = pygame.Rect(SCREEN_WIDTH / 2 - 100, 350, 200, 100)
+    noText = font.render("No", True, X_CELL)
+
+    run = True
+    while run:
+        mousePos = pygame.mouse.get_pos()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if yesButton.collidepoint(mousePos):
+                        restartGame = True
+                        run = False
+                    elif noButton.collidepoint(mousePos):
+                        restartGame = False
+                        run = False
+        
+        screen.fill(BG_COLOR)
+
+        screen.blit(title, (SCREEN_WIDTH / 2 - title.get_width() / 2, 50))
+
+        if yesButton.collidepoint(mousePos):
+            pygame.draw.rect(screen, CELL_BG_HOVER, yesButton)
+        else:
+            pygame.draw.rect(screen, CELL_BG, yesButton)
+        
+        screen.blit(yesText, (SCREEN_WIDTH / 2 - yesText.get_width() / 2, yesButton.y + yesText.get_height() / 2))
+
+        if noButton.collidepoint(mousePos):
+            pygame.draw.rect(screen, CELL_BG_HOVER, noButton)
+        else:
+            pygame.draw.rect(screen, CELL_BG, noButton)
+        
+        screen.blit(noText, (SCREEN_WIDTH / 2 - noText.get_width() / 2, noButton.y + noText.get_height() / 2))
+
+        pygame.display.flip()
+        clock.tick(FPS)
+
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -212,13 +274,9 @@ pygame.display.set_icon(icon)
 
 clock = pygame.time.Clock()
 game = None
+restartGame = True
 
-menu()
-if type(game) == IA:
-    menuDifficulty()
-    menuChoiceSymbol()
-run()
+while restartGame:
+    restart()
 
 pygame.quit()
-if type(game) == Online:
-    game.stop()

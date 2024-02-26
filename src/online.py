@@ -1,14 +1,10 @@
 import requests
 import time
-from src.grid import Grid
-from src.panel import Panel
-from src.line import Line
+from src.offline import Offline
 
-class Online:
+class Online(Offline):
     def __init__(self):
-        self.grid = Grid()
-        self.panel = Panel()
-        self.line = Line()
+        super().__init__()
         self.urlGame = "https://parseapi.back4app.com/classes/Morpion"
         self.urlPlayer = "https://parseapi.back4app.com/classes/Player"
         self.headersPostPut = {
@@ -23,7 +19,6 @@ class Online:
 
         self.player = self.initPlayer()
         self.actualPlayer = "X"
-        self.gameOver = False
         self.horloge = time.time()
     
     def initPlayer(self):
@@ -37,9 +32,6 @@ class Online:
         else:
             print("The game is already full")
             exit()
-
-    def handleMouseHover(self, pos):
-        self.grid.handleMouseHover(pos, self.gameOver)
     
     def handleMouseClick(self, pos):
         if self.grid.handleMouseClick(pos, self.player, self.gameOver) and self.player == self.actualPlayer:

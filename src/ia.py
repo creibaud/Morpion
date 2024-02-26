@@ -1,20 +1,9 @@
-from src.grid import Grid
-from src.panel import Panel
-from src.line import Line
+from src.offline import Offline
 
-class IA:
+class IA(Offline):
     def __init__(self, difficulty):
-        self.grid = Grid()
-        self.panel = Panel()
-        self.line = Line()
-
+        super().__init__()
         self.difficulty = difficulty
-
-        self.player = "X"
-        self.gameOver = False
-
-    def handleMouseHover(self, pos):
-        self.grid.handleMouseHover(pos, self.gameOver)
     
     def handleMouseClick(self, pos):
         if self.grid.handleMouseClick(pos, self.player, self.gameOver):
@@ -62,21 +51,3 @@ class IA:
                     minEval = eval
                     bestMove = move
             return minEval, bestMove
-
-    def isGameOver(self):
-        winner = self.grid.checkWinner(self.player)
-        if winner:
-            self.panel.winner = self.player
-            self.gameOver = True
-        else:
-            tie = self.grid.isTie()
-            if tie:
-                self.panel.tie = True
-                self.gameOver = True
-
-    def draw(self, screen):
-        self.grid.draw(screen)
-        self.panel.draw(screen)
-
-        if self.gameOver:
-            self.line.draw(screen, self.grid.grid)

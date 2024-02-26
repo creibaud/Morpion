@@ -1,9 +1,19 @@
 from src.offline import Offline
+import random
 
 class IA(Offline):
     def __init__(self, difficulty):
         super().__init__()
         self.difficulty = difficulty
+
+    def setStartingPlayer(self, player):
+        if player == "O":
+            row = random.randint(0, 2)
+            col = random.randint(0, 2)
+            self.grid.makeMove((row, col), "X")
+            self.player = "O"
+        else:
+            self.player = "X"
     
     def handleMouseClick(self, pos):
         if self.grid.handleMouseClick(pos, self.player, self.gameOver):

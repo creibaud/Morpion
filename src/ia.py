@@ -2,11 +2,31 @@ from src.offline import Offline
 import random
 
 class IA(Offline):
-    def __init__(self, difficulty):
+    def __init__(self, difficulty: int) -> None:
+        """
+        Constructor for the IA class
+
+        Args:
+            difficulty (int): The difficulty level of the IA
+        
+        Returns:
+            None
+        """
+
         super().__init__()
         self.difficulty = difficulty
 
-    def setStartingPlayer(self, player):
+    def setStartingPlayer(self, player: str) -> None:
+        """
+        Sets the starting player for the game
+
+        Args:
+            player (str): The starting player
+        
+        Returns:
+            None
+        """
+
         if player == "O":
             row = random.randint(0, 2)
             col = random.randint(0, 2)
@@ -15,7 +35,17 @@ class IA(Offline):
         else:
             self.player = "X"
     
-    def handleMouseClick(self, pos):
+    def handleMouseClick(self, pos: tuple[int, int]) -> None:
+        """
+        Handles the mouse click event
+
+        Args:
+            pos (tuple[int, int]): The position of the mouse
+
+        Returns:
+            None
+        """
+
         if self.grid.handleMouseClick(pos, self.player, self.gameOver):
             self.isGameOver()
             self.player = "O" if self.player == "X" else "X"
@@ -29,7 +59,19 @@ class IA(Offline):
             self.player = "O" if self.player == "X" else "X"
             self.panel.update(self.player)
 
-    def minMax(self, symbol, maximizingPlayer, depth):
+    def minMax(self, symbol: str, maximizingPlayer: bool, depth: int) -> tuple[int, int] | tuple[int, None]:
+        """
+        Minimax algorithm for the IA
+
+        Args:
+            symbol (str): The symbol of the player
+            maximizingPlayer (bool): The maximizing player
+            depth (int): The depth of the search
+        
+        Returns:
+            tuple[int, int] | tuple[int, None]: The evaluation and the best move
+        """
+
         if self.grid.isTie() or self.grid.checkWinner("X") or self.grid.checkWinner("O") or depth == 0:
             if self.grid.checkWinner("X"):
                 return -1 if symbol == "O" else 1, None

@@ -4,7 +4,17 @@ from src.offline import Offline
 from src.ia import IA
 from src.online import Online
 
-def menu():
+def menu() ->None :
+    """
+    Display the menu
+
+    Args:
+        None 
+
+    Returns:
+        None
+    """
+
     global game
     global screen
     
@@ -67,7 +77,17 @@ def menu():
         pygame.display.flip()
         clock.tick(FPS)
 
-def menuDifficulty():
+def menuDifficulty() -> None:
+    """
+    Display the difficulty menu
+
+    Args:
+        None
+    
+    Returns:
+        None
+    """
+
     global game
     global screen
     
@@ -130,7 +150,17 @@ def menuDifficulty():
         pygame.display.flip()
         clock.tick(FPS)
 
-def menuChoiceSymbol():
+def menuChoiceSymbol() -> None:
+    """
+    Display the choice of symbol menu
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+
     global game
     global screen
 
@@ -180,7 +210,17 @@ def menuChoiceSymbol():
         pygame.display.flip()
         clock.tick(FPS)
 
-def start():
+def start() -> None:
+    """
+    Start the game
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+
     global game
     global screen
 
@@ -202,7 +242,17 @@ def start():
         pygame.display.flip()
         clock.tick(FPS)
 
-def restart():
+def restart() -> None:
+    """
+    Restart the game
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+
     global game
     global screen
     global restartGame

@@ -1,9 +1,20 @@
+import pygame
 import requests
 import time
 from src.offline import Offline
 
 class Online(Offline):
-    def __init__(self):
+    def __init__(self) -> None:
+        """
+        Constructor for the Online class
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+
         super().__init__()
         self.urlGame = "https://parseapi.back4app.com/classes/Morpion"
         self.urlPlayer = "https://parseapi.back4app.com/classes/Player"
@@ -21,7 +32,17 @@ class Online(Offline):
         self.actualPlayer = "X"
         self.horloge = time.time()
     
-    def initPlayer(self):
+    def initPlayer(self) -> None:
+        """
+        Initializes the player
+
+        Args:
+            None
+        
+        Returns:
+            None
+        """
+
         response = requests.request("GET", self.urlPlayer, headers=self.headersGetDelete).json()["results"]
         if len(response) == 0:
             requests.request("POST", self.urlPlayer, headers=self.headersPostPut, json={"symbol": "X"})
@@ -33,7 +54,17 @@ class Online(Offline):
             print("The game is already full")
             exit()
     
-    def handleMouseClick(self, pos):
+    def handleMouseClick(self, pos: tuple[int, int]) -> None:
+        """
+        Handles the mouse click event
+
+        Args:
+            pos (tuple[int, int]): The position of the mouse
+
+        Returns:
+            None
+        """
+
         if self.grid.handleMouseClick(pos, self.player, self.gameOver) and self.player == self.actualPlayer:
             self.isGameOver()
             self.actualPlayer = "O" if self.actualPlayer == "X" else "X"
@@ -46,7 +77,17 @@ class Online(Offline):
             requests.request("PUT", self.urlGame + "/" + objectId, headers=self.headersPostPut, json=data)
             self.panel.update(self.actualPlayer)
     
-    def isGameOver(self):
+    def isGameOver(self) -> None:
+        """
+        Checks if the game is over
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+
         winner = self.grid.checkWinner(self.actualPlayer)
         if winner:
             self.panel.winner = self.actualPlayer
@@ -59,7 +100,17 @@ class Online(Offline):
 
         requests.request("PUT", self.urlGame, headers=self.headersPostPut, json={"gameOver": self.gameOver})
 
-    def update(self):
+    def update(self) -> None:
+        """
+        Updates the game
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+
         self.grid.grid = requests.request("GET", self.urlGame, headers=self.headersPostPut).json()["results"][0]["grid"]
         self.grid.update()
         self.isGameOver()
@@ -67,7 +118,17 @@ class Online(Offline):
         self.horloge = time.time()
         self.panel.update(self.actualPlayer)
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface) -> None:
+        """
+        Draws the game
+
+        Args:
+            screen (pygame.Surface): The surface to draw the game on (the game window)
+        
+        Returns:
+            None
+        """
+
         if time.time() - self.horloge > 5:
             self.update()
             
@@ -77,7 +138,17 @@ class Online(Offline):
         if self.gameOver:
             self.line.draw(screen, self.grid.grid)
 
-    def stop(self):
+    def stop(self) -> None:
+        """
+        Stops the game (delete the players and the game)
+
+        Args:
+            None
+        
+        Returns:
+            None
+        """
+
         objectIdList = requests.request("GET", self.urlPlayer, headers=self.headersGetDelete).json()["results"]
 
         if len(objectIdList) == 0:
